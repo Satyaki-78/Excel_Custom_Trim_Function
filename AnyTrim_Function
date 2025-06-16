@@ -1,0 +1,157 @@
+Function AnyTrim(strIn As Variant, trimType As Variant, Optional trimChar As Variant, Optional Separator As Variant) As Variant
+
+On Error GoTo ErrorHandler
+
+Dim m As Integer
+Dim strOut As Variant
+
+'Dim textSep As String
+'Dim sep As String
+'Dim leftChar, rightChar As String
+
+Dim textStrIn As String
+If VarType(strIn) = vbString Then
+textStrIn = strIn
+ElseIf TypeOf strIn Is Range Then
+textStrIn = strIn.text
+End If
+
+Dim textTrimType As String
+If VarType(trimType) = vbString Then
+textTrimType = trimType
+ElseIf TypeOf trimType Is Range Then
+textTrimType = trimType.text
+End If
+
+Dim trimText As String
+If VarType(trimChar) = vbString Then
+trimText = trimChar
+ElseIf TypeOf trimChar Is Range Then
+trimText = trimChar.text
+End If
+
+Dim paramBOOL As Boolean
+If textStrIn <> "" And textTrimType <> "" Then
+paramBOOL = True
+End If
+'If paramBOOL = False Then
+'m = MsgBox("YOU'VE ENTERED TOO FEW ARGUMENTS FOR THIS FUNCTION !", 48)
+'Exit Function
+'End If
+
+'Default Trim
+If StrComp(Trim(textTrimType), "default", vbTextCompare) = 0 And trimText = "" Then
+
+If textStrIn <> "" Then
+strOut = Trim(textStrIn)
+Else
+strOut = CVErr(xlErrValue)
+End If
+
+End If
+'Unequal Trim
+If StrComp(Trim(textTrimType), "unequal", vbTextCompare) = 0 Then
+
+Dim textSep As String
+Dim sep As String
+If VarType(Separator) = vbString Then
+textSep = Separator
+ElseIf TypeOf Separator Is Range Then
+textSep = Separator.text
+End If
+If textSep = "" Then
+sep = "|"
+ElseIf textSep <> "" Then
+sep = textSep
+End If
+Dim leftChar, rightChar As String
+If trimText = "" Then
+sep = ""
+leftChar = ""
+rightChar = ""
+Else
+leftChar = Mid(trimText, 1, InStr(1, trimText, sep) - 1)
+rightChar = Right(trimText, Len(trimText) - Len(leftChar) - 1)
+End If
+If Left(textStrIn, Len(leftChar)) = leftChar And Right(textStrIn, Len(rightChar)) = rightChar Then
+strOut = Left(textStrIn, Len(textStrIn) - Len(rightChar))
+strOut = Right(strOut, Len(strOut) - Len(leftChar))
+Else
+strOut = CVErr(xlErrValue)
+End If
+
+End If
+'Left Trim
+If StrComp(Trim(textTrimType), "left", vbTextCompare) = 0 Then
+
+If paramBOOL = True And Left(textStrIn, Len(trimText)) = trimText Then
+strOut = Right(textStrIn, Len(textStrIn) - Len(trimText))
+Else
+strOut = CVErr(xlErrValue)
+End If
+
+End If
+'Right Trim
+If StrComp(Trim(textTrimType), "right", vbTextCompare) = 0 Then
+
+If paramBOOL = True And Right(textStrIn, Len(trimText)) = trimText Then
+strOut = Left(textStrIn, Len(textStrIn) - Len(trimText))
+Else
+strOut = CVErr(xlErrValue)
+End If
+
+End If
+'Equal Trim
+If StrComp(Trim(textTrimType), "equal", vbTextCompare) = 0 Then
+
+If paramBOOL = True And Left(textStrIn, Len(trimText)) = trimText And Right(textStrIn, Len(trimText)) = trimText Then
+strOut = Mid(textStrIn, Len(trimText) + 1, Len(textStrIn) - (2 * Len(trimText)))
+Else
+strOut = CVErr(xlErrValue)
+End If
+
+End If
+'Equal Left
+If StrComp(Trim(textTrimType), "equal left", vbTextCompare) = 0 Or StrComp(Trim(textTrimType), "equalleft", vbTextCompare) = 0 Then
+
+If paramBOOL = True And Left(textStrIn, Len(trimText)) = trimText And Right(textStrIn, Len(trimText)) = trimText Then
+strOut = Right(textStrIn, Len(textStrIn) - Len(trimText))
+Else
+strOut = CVErr(xlErrValue)
+End If
+
+End If
+'Equal Right
+If StrComp(Trim(textTrimType), "equal right", vbTextCompare) = 0 Or StrComp(Trim(textTrimType), "equalright", vbTextCompare) = 0 Then
+
+If paramBOOL = True And Left(textStrIn, Len(trimText)) = trimText And Right(textStrIn, Len(trimText)) = trimText Then
+strOut = Left(textStrIn, Len(textStrIn) - Len(trimText))
+Else
+strOut = CVErr(xlErrValue)
+End If
+
+End If
+
+AnyTrim = strOut
+'Left("69BB@78", InStr(1, "69BBC@78", "BBC", vbTextCompare) - 1)
+
+ErrorHandler:
+'If paramBOOL = False Then
+'m = MsgBox("YOU'VE ENTERED TOO FEW ARGUMENTS FOR THIS FUNCTION !", 48)
+'Exit Function
+'End If
+'ActiveSheet.Activate
+'If IsError(ActiveCell.Value) Then
+'errval = ActiveCell.Value
+'Select Case errval
+'Case CVErr(xlErrValue)
+'strOut = CVErr(xlErrValue)
+'Case CVErr(xlErrRef)
+'strOut = CVErr(xlErrRef)
+'Case Else
+'strOut = "Another Error!!"
+'End Select
+'End If
+'MsgBox "ERROR"
+
+End Function
